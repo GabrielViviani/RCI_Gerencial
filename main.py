@@ -1,38 +1,73 @@
 import pandas as pd
 
-df = pd.read_excel(r"C:\Users\55219\Desktop\Temporario MesaRV\mock_data.xlsx", usecols=[0,1,2])  
-menu = int(input("O que gostaria de fazer? \n 1 - Pesquisar um código de cliente \n 2 - Adicionar um novo cliente \n 3 - Visualizar tabela de dados \n 4 - Encerrar o programa \n Selecione uma alternativa válida: "))
+# Function to display the menu options
+def display_menu():
+    print("Sistema de Cadastro de Usuários")
+    print("1 - Procurar usuário")
+    print("2 - Adicionar usuário")
+    print("3 - Ver todos os usuários")
+    print("4 - Encerrar programa.")
 
-if menu == 1:
-    
-    code = int(input("Insira o código do cliente: "))
-    filtered_df = df.loc[df['Cliente'] == code]
+# Function to search for a user by code
+def search_user(df):
+    code = int(input("Insira o código do usuário: "))
+    filtered_df = df.loc[df['Code'] == code]
     
     if not filtered_df.empty:
+        name = filtered_df['Name'].values[0]
+        email = filtered_df['Email'].values[0]
+        patrimonio = filtered_df['Net Worth'].values[0]
         
-        nome = filtered_df['Nome'].values[0]
-        cliente = filtered_df['Cliente'].values[0]
-        patrimonio = filtered_df['Patrimônio'].values[0]
-        
-        print(f"O cliente de código {code} possui as seguintes informações: \n\n Nome: {nome}\n Patrimônio: {patrimonio} \n")
+        print(f"Usuário do código {code} encontrado:\n")
+        print(f"Nome: {name}")
+        print(f"Email: {email}")
+        print(f"Patrimônio: {patrimonio}\n")
     else:
-        print("Nenhum cliente com o código fornecido foi encontrado.")
+        print("Nenhum usuário encontrado com o código informado.")
 
-elif menu == 2:
-    new_code = int(input("Por favor, insira o código do novo cliente: "))
-    new_name = str(input("Agora insira o nome do cliente, por favor: "))
-    new_networth = float(input("Qual o patrimônio atual do cliente? "))
+# Function to add a new user
+def add_user(df):
+    new_code = int(input("Insira o código do usuário: "))
+    new_name = str(input("Insira o nome do usuário: "))
+    new_email = str(input("Insira o email do usuário: "))
+    new_patrimonio = float(input("Qual o patrimônio do cliente? "))
     
-    new_client = pd.DataFrame({'Cliente': [new_code],
-                            'Nome': [new_name],
-                            'Patrimônio': [new_networth]})
+    new_user = pd.DataFrame({'Code': [new_code],
+                             'Name': [new_name],
+                             'Email': [new_email],
+                             'Net Worth': [new_patrimonio]})
     
-    df = pd.concat([df, new_client], ignore_index=True)
+    df = pd.concat([df, new_user], ignore_index=True)
+    df.to_excel(data_path, index=False)
     
-    df.to_excel(r"C:\Users\55219\Desktop\Temporario MesaRV\mock_data.xlsx", index=False)
-    
-elif menu == 3:
+    print("Novo usuário adicionado com sucesso.")
+
+# Function to view all users
+def view_all_users(df):
+    print("Todos os usuários:")
     print(df)
+    print()
+
+# Main program
+def main():
+    df = pd.read_excel(data_path, usecols=[0, 1, 2, 3])
     
-elif menu == 4:
-    print("Programa encerrado.")
+    while True:
+        display_menu()
+        menu = int(input("Selecione uma opção: "))
+        
+        if menu == 1:
+            search_user(df)
+        elif menu == 2:
+            add_user(df)
+        elif menu == 3:
+            view_all_users(df)
+        elif menu == 4:
+            print("Programa encerrado.")
+            break
+        else:
+            print("Opção inválida, tente novamente.\n")
+
+if __name__ == '__main__':
+    data_path = r"C:\Users\55219\Desktop\Temporario MesaRV\user_data.xlsx"
+    main()
